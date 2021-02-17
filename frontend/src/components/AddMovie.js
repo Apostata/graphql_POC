@@ -1,9 +1,13 @@
 import React from 'react'
+import { useMutation } from '@apollo/client' 
+import { allMovies, addMovieMutation } from '../hooks/apolloQueries'
 
-function AddMovie({addMovie}) {
+
+function AddMovie() {
     const nameRef = React.useRef('') 
     const genreRef = React.useRef('') 
     const yearRef = React.useRef('') 
+    const [addMovie] = useMutation(addMovieMutation);
 
     return (
         <div className="addMovie">
@@ -11,9 +15,11 @@ function AddMovie({addMovie}) {
                 e.preventDefault()
                 const name = nameRef.current.value; 
                 const genre = genreRef.current.value
-                const year = yearRef.current.value || new Date().getFullYear()
-                console.log({name, genre, year})
-                addMovie({name, genre, year})
+                const year = yearRef.current.value || String(new Date().getFullYear())
+                addMovie({ 
+                    variables: { name, genre, year },
+                    refetchQueries:[{query: allMovies}]
+                })
                 console.log("Movie Added")
             }}>
                 <label>Name</label>

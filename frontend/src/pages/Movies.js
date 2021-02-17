@@ -1,19 +1,23 @@
 import React from 'react'
 import Movie from '../components/Movie/Movie'
 import image from '../assets/jhon_wik_parabellum.jpg'
+import {useQuery} from '@apollo/client' 
+import { allMovies } from '../hooks/apolloQueries'
 
-const Movies = ({movies, getMovies}) => {
+const Movies = (props) => {
+    const { data } = useQuery(allMovies);
+    const [movies, setMovies] = React.useState([])
     
     React.useEffect(()=>{
-        // validar se prevMovies !== movies
-        getMovies()
-    },[movies, getMovies])
-
+        if(data){
+            setMovies(data.movies)
+        }
+    },[data])
 
     return (
         <div>
-            {movies && movies.length> 0 ? movies.map((movie, idx)=>{
-                const { name, genre, year} = movie
+            {movies.length> 0 ? movies.map((movie, idx)=>{
+                const {name, genre, year} = movie
                 return(
                     <Movie 
                         key={`${name}-${idx}`}
