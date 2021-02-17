@@ -12,7 +12,7 @@ const axiosGraphQlConfig = {
 export const useMovies = () =>{
     const [movies, setMovies] = React.useState([])
 
-    const execGraphqlQuery = async(queryString) =>{
+    const execGraphqlQuery = async(type, queryString) =>{
         const query = JSON.stringify({
             query: queryString,
         });
@@ -20,8 +20,13 @@ export const useMovies = () =>{
         axiosGraphQlConfig.data = query
         try{
             const res = await axios(axiosGraphQlConfig)
-            const {data:{data:{movies}}} = res
-            setMovies(movies)
+            if(type === 'add'){
+                const {data:{data:{addMovie}}} = res
+                setMovies([...movies, addMovie])
+            } else{
+                const {data:{data:{movies}}} = res
+                setMovies(movies)
+            }
             
         } catch(e){
             console.warn(e)
@@ -34,7 +39,7 @@ export const useMovies = () =>{
                 ${args.map((arg)=>arg).join(', ')}
             }
         }`
-        execGraphqlQuery(queryString)
+        execGraphqlQuery('get', queryString)
     }
 
     const addMovie = async({name, genre, year})=>{
@@ -45,8 +50,7 @@ export const useMovies = () =>{
                 year
             }
         }`
-        execGraphqlQuery(queryString)
-        setTimeout(()=>{getMovies()}, 300)
+        execGraphqlQuery('add', queryString)
     }
 
     return{
