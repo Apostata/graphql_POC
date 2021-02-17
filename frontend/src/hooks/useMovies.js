@@ -1,36 +1,57 @@
 import React from 'react'
 import axios from 'axios'
 
+const axiosGraphQlConfig = {
+    method: 'post',
+    url: 'http://localhost:4000/graphql',
+    headers: { 
+        'Content-Type': 'application/json'
+    }
+};
+
 export const useMovies = () =>{
     const [movies, setMovies] = React.useState([])
 
-    const getMovies = async ()=>{
-        const graphQlQuery = JSON.stringify({
-            query:`{
-                movies:{
-                    name,
-                    genre,
-                    year
-                }
-            }`
-        })
+    const execGraphqlQuery = async(queryString) =>{
+        const query = JSON.stringify({
+            query: queryString,
+        });
+        
+        axiosGraphQlConfig.data = query
+        try{
+            const res = await axios(axiosGraphQlConfig)
+            const {data:{data:{movies}}} = res
+            setMovies(movies)
+            
+        } catch(e){
+            console.warn(e)
+        }
+    }
 
-        var config = {
-            method: 'get',
-            url: 'http://localhost:4000/graphql',
-            headers: { 
-              'Content-Type': 'application/json'
-            },
-            data : graphQlQuery
-        };
+    const getMovies = async (args=['name', 'genre', 'year']) =>{
+        const queryString = `{
+            movies{
+                ${args.map((arg)=>arg).join(', ')}
+            }
+        }`
+        execGraphqlQuery(queryString)
+    }
 
-        const res = await axios.get(config)
-        console.log(JSON.stringify(res.data))
-        setMovies(JSON.stringify(res.data))
+    const addMovie = async({name, genre, year})=>{
+        const queryString = ` mutation {
+            addMovie(name: "${name}", genre: "${genre}", year: "${year}"){
+                name,
+                genre,
+                year
+            }
+        }`
+        execGraphqlQuery(queryString)
+        setTimeout(()=>{getMovies()}, 300)
     }
 
     return{
         movies,
-        getMovies
+        getMovies,
+        addMovie
     }
 }

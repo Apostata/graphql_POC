@@ -1,22 +1,21 @@
 import React from 'react'
 import Movie from '../components/Movie/Movie'
 import image from '../assets/jhon_wik_parabellum.jpg'
-import {useMovies} from '../hooks/useMovies';
 
-const Movies = () => {
-    const {movies, getMovies} = useMovies()
-
+const Movies = ({movies, getMovies}) => {
+    
     React.useEffect(()=>{
         getMovies()
     },[])
-    
+
+
     return (
         <div>
-            {movies.length>0 && movies.map(movie=>{
-                const {id, name, genre, year} = movie
+            {movies && movies.length> 0 ? movies.map((movie, idx)=>{
+                const { name, genre, year} = movie
                 return(
                     <Movie 
-                        key={id}
+                        key={`${name}-${idx}`}
                         name={name}
                         genre={genre}
                         year={year}
@@ -24,7 +23,9 @@ const Movies = () => {
                     />
                 )
             }
-            )}
+            ):
+            <h2>No movies to Display! Please add some movies!</h2>
+            }
         </div>
     )
 }

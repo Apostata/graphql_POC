@@ -5,7 +5,7 @@ function Movie({name, genre, year, image}) {
         <div className="card">
             <div className="container">
                 <img src={image} alt={name} />
-                <h2>{name}</h2>
+                <h3>{name}</h3>
                 <h4>{genre} - {year}</h4>
             </div>
         </div>
