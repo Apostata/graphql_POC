@@ -6,6 +6,7 @@ const Movies = ({movies, getMovies}) => {
     
     React.useEffect(()=>{
         getMovies()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
 
